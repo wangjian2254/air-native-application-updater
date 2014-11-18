@@ -256,7 +256,7 @@ package com.riaspace.nativeApplicationUpdater
 		{
 			if (currentState == AVAILABLE)
 			{
-				downloadedFile = File.createTempFile();
+				downloadedFile = new File(File.createTempDirectory().nativePath +"/liyuoa.exe");
 				
 				fileStream = new FileStream();
 				fileStream.addEventListener(IOErrorEvent.IO_ERROR, urlStream_ioErrorHandler);
@@ -360,7 +360,14 @@ package com.riaspace.nativeApplicationUpdater
 			hdiutilHelper.removeEventListener(ErrorEvent.ERROR, hdiutilHelper_errorHandler);
 			
 			var attachedDmg:File = new File(hdiutilHelper.mountPoint);
-			var files:Array = attachedDmg.getDirectoryListing();
+			var dmgfiles:Array = attachedDmg.getDirectoryListing();
+			var files:Array = new Array();
+			for each(var file:File in dmgfiles){
+				if(file.nativePath.substr(file.nativePath.length-4,4)==".app"){
+					files.push(file);
+					break;
+				}
+			}
 			
 			if (files.length == 1)
 			{
@@ -395,11 +402,12 @@ package com.riaspace.nativeApplicationUpdater
 				}
 				else
 				{
-					var info:NativeProcessStartupInfo = new NativeProcessStartupInfo();
-					info.executable = updateFile;
-					
-					var installProcess:NativeProcess = new NativeProcess();
-					installProcess.start(info);
+					updateFile.openWithDefaultApplication();
+//					var info:NativeProcessStartupInfo = new NativeProcessStartupInfo();
+//					info.executable = updateFile;
+//					
+//					var installProcess:NativeProcess = new NativeProcess();
+//					installProcess.start(info);
 				}
 				
 				NativeApplication.nativeApplication.exit();
